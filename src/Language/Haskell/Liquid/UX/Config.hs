@@ -147,7 +147,7 @@ pruneFlag :: (HasConfig t) => t -> Bool
 pruneFlag = pruneUnsorted . getConfig
 
 expandFlag :: (HasConfig t) => t -> Bool
-expandFlag = const False -- not . nocaseexpand . getConfig
+expandFlag = not . nocaseexpand . getConfig
 
 hasOpt :: (HasConfig t) => t -> (Config -> Bool) -> Bool
 hasOpt t f = f (getConfig t)

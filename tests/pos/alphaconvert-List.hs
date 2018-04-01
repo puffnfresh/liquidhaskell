@@ -134,7 +134,7 @@ xs   \\ y     = [x | x <- xs, x /= y]
 elem x []     = False
 elem x (y:ys) = x == y || elem x ys
 
-{-@ measure elts :: [a] -> (Set a)
-    elts ([])    = {v | Set_emp v}
-    elts (x:xs)  = {v | v = Set_cup (Set_sng x) (elts xs) }
-  @-}
+{-@ measure elts @-} 
+elts :: [a] -> (Set a)
+elts ([])    = {v | Set_emp v}
+elts (x:xs)  = {v | v = Set_cup (Set_sng x) (elts xs) }

@@ -163,9 +163,10 @@ theoremVar t i
 theoremVarOne :: Term -> Int -> Term -> Proof
 theoremVarOne (TFun t1 t2) i ti
   = theoremVarOne t1 i ti &&& theoremVarOne t2 i ti 
-theoremVarOne t i ti
+theoremVarOne TBot _ _ 
   = trivial 
-
+theoremVarOne (TVar _) _ _
+  = trivial 
 
 
 -- | Helpers to lift Terms and Lists into logic...

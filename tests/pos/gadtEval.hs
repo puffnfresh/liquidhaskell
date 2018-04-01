@@ -61,11 +61,10 @@ toBool _     = liquidError "impossible"
 
 {-@ predicate IsTInt X   = ((eType X) = TInt)  @-}
 {-@ predicate IsTBool X  = ((eType X) = TBool) @-}
-
-
-{-@ type ValidExpr     = {v: Expr | (isValid v)}                @-}
-{-@ type IntExpr       = {v: Expr | ((isValue v) && (IsTInt  v))} @-}
-{-@ type BoolExpr      = {v: Expr | ((isValue v) && (IsTBool v))} @-}
+{-@ type Value         = {v: Expr | isValue v}      @-}
+{-@ type ValidExpr     = {v: Expr | isValid v}      @-}
+{-@ type IntExpr       = {v: ValidExpr | IsTInt  v} @-}
+{-@ type BoolExpr      = {v: ValidExpr | IsTBool v} @-}
 
 
 {-@ measure isValue       :: Expr -> Bool

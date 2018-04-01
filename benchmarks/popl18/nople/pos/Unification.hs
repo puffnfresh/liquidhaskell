@@ -173,11 +173,11 @@ theoremVarOne (TFun t1 t2) i ti
   ==. TFun t1 t2
       ? theoremVarOne t2 i ti
   *** QED
-theoremVarOne t i ti
+
+theoremVarOne t i ti		
   =   applyOne (P i ti) t
   ==. t
   *** QED
-
 
 
 -- | Helpers to lift Terms and Lists into logic...

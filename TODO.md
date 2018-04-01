@@ -4,6 +4,25 @@
 size A = 10 
 size _ = 20 
 
+  RecQSort0.hs:                           FAIL (0.95s)
+  RecQSort.hs:                            FAIL (0.93s)
+  OrdList.hs:                             FAIL (2.59s)
+  GhcSort3.T.hs:                          FAIL (1.67s)
+  GhcSort3.hs:                            FAIL (5.28s)
+  GhcSort2.hs:                            FAIL (1.84s)
+  GhcSort1.hs:                            OK (5.70s)
+  GhcListSort.hs:                         FAIL (11.17s)
+  alphaconvert-Set.hs:                    FAIL (1.00s)
+  alphaconvert-List.hs:                   FAIL (1.51s)
+  esop
+   GhcListSort.hs:                         FAIL (10.76s)
+
+  gadtEval.hs:                            FAIL (1.41s)
+  Unification.hs - Tests.Prover.instances
+  Unification.hs - Tests.Prover.with_ple
+  Unification.hs - Tests.Prover.without_ple
+
+
 ## jp-strict
 
 See slack
