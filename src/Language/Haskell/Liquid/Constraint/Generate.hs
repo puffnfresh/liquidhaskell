@@ -817,7 +817,7 @@ consE γ e'@(App e a) | Just aDict <- getExprDict γ a
 
 consE γ e'@(App {})
   | (e, as) <- splitEApp e'
-  = do ([], πs, ls, te) <- bkUniv <$> consE γ e -- peel quantifiers off
+  = do (_, πs, ls, te) <- bkUniv <$> consE γ e -- peel quantifiers off
        -- ART instantiation
        -- foldr pops ART quantifiers back on
        te0              <- instantiatePreds γ undefined $ foldr RAllP te πs
@@ -832,7 +832,7 @@ consE γ e'@(App {})
                                 (addPost γ' $
              maybe (checkUnbound γ' e' x t a)
                           (F.subst1 t . (x,)) (argExpr γ a))
-       mapM singleton $ zip (fst<$>xts) as
+       let _ = mapM singleton $ zip (fst<$>xts) as
        return t
 
 consE γ (Lam α e) | isTyVar α
