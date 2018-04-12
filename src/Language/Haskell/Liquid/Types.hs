@@ -1312,6 +1312,7 @@ mkUnivs :: (Foldable t, Foldable t1, Foldable t2)
         -> RType c tv r
 mkUnivs αs πs ls t = foldr RAllT (foldr RAllP (foldr RAllS t ls) πs) αs
 
+-- alphas :tvars, pis : abstract refinements , s : strata , t what you're left with
 bkUniv :: RType tv c r -> ([RTVar c (RType tv c ())], [PVar (RType tv c ())], [Symbol], RType tv c r)
 bkUniv (RAllT α t) = let (αs, πs, ls, t') = bkUniv t in (α:αs, πs, ls, t')
 bkUniv (RAllP π t) = let (αs, πs, ls, t') = bkUniv t in (αs, π:πs, ls, t')

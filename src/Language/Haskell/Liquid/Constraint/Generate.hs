@@ -722,6 +722,7 @@ instantiatePreds :: CGEnv
                  -> SpecType
                  -> CG SpecType
 instantiatePreds γ e (RAllP π t)
+  -- Ref is a monomorphized abstract refinement
   = do r     <- freshPredRef γ e π
        instantiatePreds γ e $ replacePreds "consE" t [(π, r)]
 
@@ -814,17 +815,25 @@ consE γ e'@(App e a) | Just aDict <- getExprDict γ a
         pushConsBind      $ cconsE γ' a tx
         addPost γ'        $ maybe (checkUnbound γ' e' x t a) (F.subst1 t . (x,)) (argExpr γ a)
 
-
-consE γ e'@(App e a)
-  = do ([], πs, ls, te) <- bkUniv <$> consE γ e
-       te0              <- instantiatePreds γ e' $ foldr RAllP te πs
+consE γ e'@(App {})
+  | (e, as) <- splitEApp e'
+  = do ([], πs, ls, te) <- bkUniv <$> consE γ e -- peel quantifiers off
+       -- ART instantiation
+       -- foldr pops ART quantifiers back on
+       te0              <- instantiatePreds γ undefined $ foldr RAllP te πs
        te'              <- instantiateStrata ls te0
+       -- more instantiation "don't worry about it"
        (γ', te''')      <- dropExists γ te'
        te''             <- dropConstraints γ te'''
        updateLocA (exprLoc e) te''
-       let RFun x tx t _ = checkFun ("Non-fun App with caller ", e') γ te''
-       pushConsBind      $ cconsE γ' a tx
-       makeSingleton γ e' <$>  (addPost γ' $ maybe (checkUnbound γ' e' x t a) (F.subst1 t . (x,)) (argExpr γ a))
+       let (xts, t) = splitSType te''
+       mapM_ pushConsBind $ (uncurry (cconsE γ') <$> zip as (snd <$> xts))
+       let singleton (x,a) = makeSingleton γ e' <$>
+                                (addPost γ' $
+             maybe (checkUnbound γ' e' x t a)
+                          (F.subst1 t . (x,)) (argExpr γ a))
+       mapM singleton $ zip (fst<$>xts) as
+       return t
 
 consE γ (Lam α e) | isTyVar α
   = do γ' <- updateEnvironment γ α
@@ -869,6 +878,18 @@ consE _ e@(Coercion _)
 
 consE _ e@(Type t)
   = panic Nothing $ "consE cannot handle type " ++ GM.showPpr (e, t)
+
+splitEApp :: Expr b -> (Expr b, [Arg b])
+splitEApp = go []
+  where
+    go acc (App f e) = go (e:acc) f
+    go acc e          = (e, acc)
+
+splitSType :: RType c tv r
+              -> ([(F.Symbol, RType c tv r)], RType c tv r)
+splitSType (RFun x tx t _) = ((x,tx):acc, t')
+  where (acc,t') = splitSType t
+splitSType t = ([],t)
 
 caseKVKind ::[Alt Var] -> KVKind
 caseKVKind [(DataAlt _, _, Var _)] = ProjectE
